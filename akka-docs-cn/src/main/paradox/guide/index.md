@@ -1,18 +1,18 @@
-# Getting Started Guide
+# 开始
 
 @@toc { depth=2 }
 
 @@@ index
 
- * [introduction](introduction.md)
- * [actors-motivation](actors-motivation.md)
- * [actors-intro](actors-intro.md)
- * [modules](modules.md)
- * [tutorial](tutorial.md)
- * [part1](tutorial_1.md)
- * [part2](tutorial_2.md)
- * [part3](tutorial_3.md)
- * [part4](tutorial_4.md)
- * [part5](tutorial_5.md)
+ * [介绍](introduction.md)
+ * [actors-发展起因](actors-motivation.md)
+ * [actors-介绍](actors-intro.md)
+ * [模块](modules.md)
+ * [教程](tutorial.md)
+ * [教程-1](tutorial_1.md)
+ * [教程-2](tutorial_2.md)
+ * [教程-3](tutorial_3.md)
+ * [教程-4](tutorial_4.md)
+ * [教程-5](tutorial_5.md)
 
 @@@
