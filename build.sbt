@@ -188,7 +188,7 @@ lazy val distributedData = akkaModule("akka-distributed-data")
   .configs(MultiJvm)
   .enablePlugins(MultiNodeScalaTest)
 
-lazy val docs = akkaModule("akka-docs")
+lazy val docs = akkaModule("akka-docs-cn")
   .dependsOn(
     actor, cluster, clusterMetrics, slf4j, agent, camel, osgi, persistenceTck, persistenceQuery, distributedData, stream,
     clusterTools % "compile->compile;test->test",
