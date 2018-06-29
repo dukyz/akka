@@ -1,16 +1,12 @@
 # Mailboxes
 
-An Akka `Mailbox` holds the messages that are destined for an `Actor`.
-Normally each `Actor` has its own mailbox, but with for example a `BalancingPool`
-all routees will share a single mailbox instance.
+An Akka `Mailbox` holds the messages that are destined for an `Actor`. Normally each `Actor` has its own mailbox, but with for example a `BalancingPool` all routees will share a single mailbox instance.
 
 ## Mailbox Selection
 
 ### Requiring a Message Queue Type for an Actor
 
-It is possible to require a certain type of message queue for a certain type of actor
-by having that actor @scala[extend]@java[implement] the parameterized @scala[trait]@java[interface] `RequiresMessageQueue`. Here is
-an example:
+It is possible to require a certain type of message queue for a certain type of actor by having that actor @scala[extend]@java[implement] the parameterized @scala[trait]@java[interface] `RequiresMessageQueue`. Here is an example:
 
 Scala
 :   @@snip [DispatcherDocSpec.scala]($code$/scala/docs/dispatcher/DispatcherDocSpec.scala) { #required-mailbox-class }
@@ -18,29 +14,21 @@ Scala
 Java
 :   @@snip [MyBoundedActor.java]($code$/java/jdocs/actor/MyBoundedActor.java) { #my-bounded-untyped-actor }
 
-The type parameter to the `RequiresMessageQueue` @scala[trait]@java[interface] needs to be mapped to a mailbox in
-configuration like this:
+The type parameter to the `RequiresMessageQueue` @scala[trait]@java[interface] needs to be mapped to a mailbox in configuration like this:
 
 @@snip [DispatcherDocSpec.scala]($code$/scala/docs/dispatcher/DispatcherDocSpec.scala) { #bounded-mailbox-config #required-mailbox-config }
 
-Now every time you create an actor of type `MyBoundedActor` it will try to get a bounded
-mailbox. If the actor has a different mailbox configured in deployment, either directly or via
-a dispatcher with a specified mailbox type, then that will override this mapping.
+Now every time you create an actor of type `MyBoundedActor` it will try to get a bounded mailbox. If the actor has a different mailbox configured in deployment, either directly or via a dispatcher with a specified mailbox type, then that will override this mapping.
 
 @@@ note
 
-The type of the queue in the mailbox created for an actor will be checked against the required type in the
-@scala[trait]@java[interface] and if the queue doesn't implement the required type then actor creation will fail.
+The type of the queue in the mailbox created for an actor will be checked against the required type in the @scala[trait]@java[interface] and if the queue doesn't implement the required type then actor creation will fail.
 
 @@@
 
 ### Requiring a Message Queue Type for a Dispatcher
 
-A dispatcher may also have a requirement for the mailbox type used by the
-actors running on it. An example is the BalancingDispatcher which requires a
-message queue that is thread-safe for multiple concurrent consumers. Such a
-requirement is formulated within the dispatcher configuration section like
-this:
+A dispatcher may also have a requirement for the mailbox type used by the actors running on it. An example is the BalancingDispatcher which requires a message queue that is thread-safe for multiple concurrent consumers. Such a requirement is formulated within the dispatcher configuration section like this:
 
 ```
 my-dispatcher {
@@ -48,40 +36,24 @@ my-dispatcher {
 }
 ```
 
-The given requirement names a class or interface which will then be ensured to
-be a supertype of the message queue’s implementation. In case of a
-conflict—e.g. if the actor requires a mailbox type which does not satisfy this
-requirement—then actor creation will fail.
+The given requirement names a class or interface which will then be ensured to be a supertype of the message queue’s implementation. In case of a conflict—e.g. if the actor requires a mailbox type which does not satisfy this requirement—then actor creation will fail.
 
 ### How the Mailbox Type is Selected
 
-When an actor is created, the `ActorRefProvider` first determines the
-dispatcher which will execute it. Then the mailbox is determined as follows:
+When an actor is created, the `ActorRefProvider` first determines the dispatcher which will execute it. Then the mailbox is determined as follows:
 
- 1. If the actor’s deployment configuration section contains a `mailbox` key
-then that names a configuration section describing the mailbox type to be
-used.
- 2. If the actor’s `Props` contains a mailbox selection—i.e. `withMailbox`
-was called on it—then that names a configuration section describing the
-mailbox type to be used.
- 3. If the dispatcher’s configuration section contains a `mailbox-type` key
-the same section will be used to configure the mailbox type.
- 4. If the actor requires a mailbox type as described above then the mapping for
-that requirement will be used to determine the mailbox type to be used; if
-that fails then the dispatcher’s requirement—if any—will be tried instead.
- 5. If the dispatcher requires a mailbox type as described above then the
-mapping for that requirement will be used to determine the mailbox type to
-be used.
+ 1. If the actor’s deployment configuration section contains a `mailbox` key then that names a configuration section describing the mailbox type to be used.
+ 2. If the actor’s `Props` contains a mailbox selection—i.e. `withMailbox` was called on it—then that names a configuration section describing the mailbox type to be used.
+ 3. If the dispatcher’s configuration section contains a `mailbox-type` key the same section will be used to configure the mailbox type.
+ 4. If the actor requires a mailbox type as described above then the mapping for that requirement will be used to determine the mailbox type to be used; if that fails then the dispatcher’s requirement—if any—will be tried instead.
+ 5. If the dispatcher requires a mailbox type as described above then the mapping for that requirement will be used to determine the mailbox type to be used.
  6. The default mailbox `akka.actor.default-mailbox` will be used.
 
 ### Default Mailbox
 
-When the mailbox is not specified as described above the default mailbox
-is used. By default it is an unbounded mailbox, which is backed by a
-`java.util.concurrent.ConcurrentLinkedQueue`.
+When the mailbox is not specified as described above the default mailbox is used. By default it is an unbounded mailbox, which is backed by a `java.util.concurrent.ConcurrentLinkedQueue`.
 
-`SingleConsumerOnlyUnboundedMailbox` is an even more efficient mailbox, and
-it can be used as the default mailbox, but it cannot be used with a BalancingDispatcher.
+`SingleConsumerOnlyUnboundedMailbox` is an even more efficient mailbox, and it can be used as the default mailbox, but it cannot be used with a BalancingDispatcher.
 
 Configuration of `SingleConsumerOnlyUnboundedMailbox` as default mailbox:
 
@@ -93,12 +65,7 @@ akka.actor.default-mailbox {
 
 ### Which Configuration is passed to the Mailbox Type
 
-Each mailbox type is implemented by a class which extends `MailboxType`
-and takes two constructor arguments: a `ActorSystem.Settings` object and
-a `Config` section. The latter is computed by obtaining the named
-configuration section from the actor system’s configuration, overriding its
-`id` key with the configuration path of the mailbox type and adding a
-fall-back to the default mailbox configuration section.
+Each mailbox type is implemented by a class which extends `MailboxType` and takes two constructor arguments: a `ActorSystem.Settings` object and a `Config` section. The latter is computed by obtaining the named configuration section from the actor system’s configuration, overriding its `id` key with the configuration path of the mailbox type and adding a fall-back to the default mailbox configuration section.
 
 ## Builtin Mailbox Implementations
 
@@ -146,8 +113,7 @@ Akka comes shipped with a number of mailbox implementations:
     * Bounded: No
     * Configuration name: "akka.dispatch.UnboundedStablePriorityMailbox"
 
-Other bounded mailbox implementations which will block the sender if the capacity is reached and
-configured with non-zero `mailbox-push-timeout-time`. 
+Other bounded mailbox implementations which will block the sender if the capacity is reached and configured with non-zero `mailbox-push-timeout-time`. 
 
 @@@ note
 
@@ -229,8 +195,7 @@ Java
 
 ### ControlAwareMailbox
 
-A `ControlAwareMailbox` can be very useful if an actor needs to be able to receive control messages
-immediately no matter how many other messages are already in its mailbox.
+A `ControlAwareMailbox` can be very useful if an actor needs to be able to receive control messages immediately no matter how many other messages are already in its mailbox.
 
 It can be configured like this:
 
@@ -269,18 +234,11 @@ Scala
 Java
 :   @@snip [MyUnboundedMailbox.java]($code$/java/jdocs/dispatcher/MyUnboundedMailbox.java) { #mailbox-implementation-example }
 
-And then you just specify the FQCN of your MailboxType as the value of the "mailbox-type" in the dispatcher
-configuration, or the mailbox configuration.
+And then you just specify the FQCN of your MailboxType as the value of the "mailbox-type" in the dispatcher configuration, or the mailbox configuration.
 
 @@@ note
 
-Make sure to include a constructor which takes
-`akka.actor.ActorSystem.Settings` and `com.typesafe.config.Config`
-arguments, as this constructor is invoked reflectively to construct your
-mailbox type. The config passed in as second argument is that section from
-the configuration which describes the dispatcher or mailbox setting using
-this mailbox type; the mailbox type will be instantiated once for each
-dispatcher or mailbox setting using it.
+Make sure to include a constructor which takes `akka.actor.ActorSystem.Settings` and `com.typesafe.config.Config` arguments, as this constructor is invoked reflectively to construct your mailbox type. The config passed in as second argument is that section from the configuration which describes the dispatcher or mailbox setting using this mailbox type; the mailbox type will be instantiated once for each dispatcher or mailbox setting using it.
 
 @@@
 
@@ -298,14 +256,7 @@ Java
 
 ## Special Semantics of `system.actorOf`
 
-In order to make `system.actorOf` both synchronous and non-blocking while
-keeping the return type `ActorRef` (and the semantics that the returned
-ref is fully functional), special handling takes place for this case. Behind
-the scenes, a hollow kind of actor reference is constructed, which is sent to
-the system’s guardian actor who actually creates the actor and its context and
-puts those inside the reference. Until that has happened, messages sent to the
-`ActorRef` will be queued locally, and only upon swapping the real
-filling in will they be transferred into the real mailbox. Thus,
+In order to make `system.actorOf` both synchronous and non-blocking while keeping the return type `ActorRef` (and the semantics that the returned ref is fully functional), special handling takes place for this case. Behind the scenes, a hollow kind of actor reference is constructed, which is sent to the system’s guardian actor who actually creates the actor and its context and puts those inside the reference. Until that has happened, messages sent to the `ActorRef` will be queued locally, and only upon swapping the real filling in will they be transferred into the real mailbox. Thus,
 
 Scala
 :   @@@vars
@@ -327,5 +278,4 @@ Java
     ```
     @@@
 
-will probably fail; you will have to allow for some time to pass and retry the
-check à la `TestKit.awaitCond`.
+will probably fail; you will have to allow for some time to pass and retry the check à la `TestKit.awaitCond`.
